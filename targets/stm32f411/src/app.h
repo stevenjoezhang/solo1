@@ -56,6 +56,8 @@ void hw_init(int lf);
 #define LED_MAX_SCALER          15
 #define LED_MIN_SCALER          1
 #define HEARTBEAT_PERIOD        150
+// CTAPHID_WINK: blink a few times (any nonzero value = LED on).
+#define LED_WINK_VALUE          0x010101
 
 // Button: KEY on PA0, active low (pressed = grounded).
 #define SOLO_BUTTON_PORT        GPIOA

@@ -701,11 +701,15 @@ static int wait_for_button_activate(uint32_t wait)
         {
             return 0;
         }
+        // Single-color LED cannot show "waiting for touch" as a color, so
+        // blink it at 4 Hz; heartbeat() restores solid ON afterwards.
+        led_rgb(((millis() - start) / 125) & 1 ? 0 : 1);
         delay(1);
         ret = handle_packets();
         if (ret)
             return ret;
     } while (!IS_BUTTON_PRESSED());
+    led_rgb(1);
     return 0;
 }
 
@@ -910,7 +914,10 @@ void device_read_aaguid(uint8_t * dst){
 void _Error_Handler(char *file, int line)
 {
     printf2(TAG_ERR,"Error: %s: %d\r\n", file, line);
-    while(1)
-    {
-    }
+    led_fault();
+}
+
+void HardFault_Handler(void)
+{
+    led_fault();
 }

@@ -42,6 +42,20 @@ void led_setup(void)
     led_rgb(0);    // off
 }
 
+// Fatal error indicator: short flash every ~2 s, forever.  Busy-waits
+// because it runs from fault context where no tick interrupt fires.
+void led_fault(void)
+{
+    led_setup();
+    while (1)
+    {
+        led_rgb(1);
+        for (volatile uint32_t i = 0; i < 400000; i++) ;
+        led_rgb(0);
+        for (volatile uint32_t i = 0; i < 8000000; i++) ;
+    }
+}
+
 void led_test_colors()
 {
     // Should produce blinking of the LED

@@ -12,6 +12,7 @@
 void led_setup(void);
 void led_rgb(uint32_t hex);
 void led_test_colors();
+void led_fault(void) __attribute__((noreturn));
 
 // Black pill: single LED on PC13, active low.
 #define LED_PIN       LL_GPIO_PIN_13
