@@ -54,7 +54,10 @@
 // Works for any integer-MHz HSE: M = HSE_MHz, N = 384, P = 4, Q = 8.
 #define PLL_N               384
 #define PLL_P               LL_RCC_PLLP_DIV_4
-#define PLL_Q               8
+// LL_RCC_PLL_ConfigDomain_48M ORs PLLQ in unshifted, so it must be the
+// pre-shifted LL constant; a raw 8 corrupts PLLM and leaves PLLQ at its
+// reset value 4, giving a 96 MHz USB clock (bus resets but no SETUP).
+#define PLL_Q               LL_RCC_PLLQ_DIV_8
 #define SYSCLK_HZ           96000000u
 
 #define SET_CLOCK_RATE2()        SystemClock_Config()
@@ -227,6 +230,9 @@ void SystemClock_Config(void)
     }
 
     LL_Init1msTick(SYSCLK_HZ);
+    // LL_Init1msTick only starts the counter; HAL_Delay (used by the USB
+    // PCD driver) needs SysTick_Handler to advance uwTick.
+    LL_SYSTICK_EnableIT();
     LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
     LL_SetSystemCoreClock(SYSCLK_HZ);
 
@@ -269,6 +275,9 @@ void SystemClock_Config_LF16(void)
     }
 
     LL_Init1msTick(16000000);
+    // LL_Init1msTick only starts the counter; HAL_Delay (used by the USB
+    // PCD driver) needs SysTick_Handler to advance uwTick.
+    LL_SYSTICK_EnableIT();
     LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
     LL_SetSystemCoreClock(16000000);
 
@@ -387,6 +396,10 @@ void init_gpio(void)
 void init_millisecond_timer(int lf)
 {
     LL_TIM_InitTypeDef TIM_InitStruct;
+    // TIM4 (unlike L4's TIM6) is a clock-division instance: LL_TIM_Init ORs
+    // ClockDivision straight into CR1, so stack garbage can set OPM/UDIS and
+    // stop the millisecond tick.  Start from defaults.
+    LL_TIM_StructInit(&TIM_InitStruct);
 
     /* Peripheral clock enable */
     // F411 has no TIM6/DAC (that pairing exists on L4/F407); use TIM4.
