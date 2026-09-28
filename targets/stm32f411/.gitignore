@@ -1,0 +1,13 @@
+# build artifacts
+*.o
+*.a
+*.d
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# target-local build stamps (see Makefile / build/application.mk)
+.built_chip
+.debug_level_*

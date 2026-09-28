@@ -15,4 +15,4 @@
 	url = https://github.com/solokeys/cifra.git
 [submodule "crypto/salty"]
 	path = crypto/salty
-	url = https://github.com/ycrypto/salty.git
+	url = https://github.com/stevenjoezhang/salty.git

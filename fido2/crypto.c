@@ -31,7 +31,7 @@
 #include APP_CONFIG
 #include "log.h"
 
-#if defined(STM32L432xx)
+#if defined(STM32L432xx) || defined(STM32F411xE)
 #include "salty.h"
 #else
 #include <sodium/crypto_sign_ed25519.h>
@@ -365,7 +365,7 @@ void crypto_aes256_encrypt(uint8_t * buf, int length)
 
 void crypto_ed25519_derive_public_key(uint8_t * data, int len, uint8_t * x)
 {
-#if defined(STM32L432xx)
+#if defined(STM32L432xx) || defined(STM32F411xE)
 
     uint8_t seed[salty_SECRETKEY_SEED_LENGTH];
 
@@ -385,7 +385,7 @@ void crypto_ed25519_derive_public_key(uint8_t * data, int len, uint8_t * x)
 
 void crypto_ed25519_load_key(uint8_t * data, int len)
 {
-#if defined(STM32L432xx)
+#if defined(STM32L432xx) || defined(STM32F411xE)
 
     static uint8_t seed[salty_SECRETKEY_SEED_LENGTH];
 
@@ -427,7 +427,7 @@ void crypto_ed25519_sign(uint8_t * data1, int len1, uint8_t * data2, int len2, u
     memcpy(data,        data1, len1);
     memcpy(data + len1, data2, len2);
 
-#if defined(STM32L432xx)
+#if defined(STM32L432xx) || defined(STM32F411xE)
 
     // TODO: check that correct load_key() had been called?
     salty_sign((uint8_t (*)[salty_SECRETKEY_SEED_LENGTH])_signing_key, data, len,
